@@ -1,0 +1,10 @@
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+frontend/dist/
+backend/karekatt.db
+backend/karekatt.db-shm
+backend/karekatt.db-wal
+.env
+.env.local
+*.log

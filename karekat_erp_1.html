@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Karekat Prints ERP</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;font-size:14px;color:#1a1a1a;background:#f5f5f0;display:flex;min-height:100vh}
+.sidebar{width:210px;flex-shrink:0;background:#fff;border-right:1px solid #e5e5e0;padding:0;display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;overflow-y:auto}
+.logo{padding:16px 16px 12px;border-bottom:1px solid #e5e5e0}
+.logo-top{font-size:11px;font-weight:600;color:#888;letter-spacing:0.08em;text-transform:uppercase}
+.logo-name{font-size:17px;font-weight:600;color:#111;margin-top:2px}
+.nav-section{font-size:10px;font-weight:600;color:#aaa;padding:14px 16px 4px;letter-spacing:0.08em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;color:#555;font-size:13px;border-left:2px solid transparent}
+.nav-item:hover{background:#f5f5f0;color:#111}
+.nav-item.active{background:#EFF6FF;color:#1D4ED8;border-left-color:#1D4ED8;font-weight:600}
+.nav-item svg{width:16px;height:16px;flex-shrink:0}
+.main{flex:1;margin-left:210px;padding:24px;display:flex;flex-direction:column;gap:16px}
+.page{display:none;flex-direction:column;gap:16px}
+.page.active{display:flex}
+.page-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.page-title{font-size:20px;font-weight:600}
+.btn{padding:8px 14px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;color:#111;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+.btn:hover{background:#f5f5f0}
+.btn.primary{background:#1D4ED8;color:#fff;border-color:#1D4ED8}
+.btn.primary:hover{background:#1e40af}
+.btn.danger{background:#B91C1C;color:#fff;border-color:#B91C1C}
+.btn.sm{padding:4px 10px;font-size:12px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.metric{background:#fff;border:1px solid #e5e5e0;border-radius:10px;padding:14px 16px}
+.metric-label{font-size:11px;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;font-weight:600}
+.metric-val{font-size:24px;font-weight:700}
+.metric-val.blue{color:#1D4ED8}.metric-val.green{color:#15803D}.metric-val.amber{color:#B45309}.metric-val.red{color:#B91C1C}.metric-val.purple{color:#7C3AED}.metric-val.gray{color:#555}
+.card{background:#fff;border:1px solid #e5e5e0;border-radius:12px;overflow:hidden}
+.card-head{padding:12px 16px;border-bottom:1px solid #e5e5e0;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:space-between;background:#fafaf8}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:9px 12px;font-size:11px;font-weight:600;color:#888;border-bottom:1px solid #e5e5e0;text-transform:uppercase;letter-spacing:0.04em;background:#fafaf8}
+td{padding:10px 12px;border-bottom:1px solid #f0f0eb;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafaf8}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600}
+.badge.green{background:#DCFCE7;color:#15803D}.badge.amber{background:#FEF3C7;color:#B45309}.badge.red{background:#FEE2E2;color:#B91C1C}.badge.blue{background:#DBEAFE;color:#1D4ED8}.badge.gray{background:#F3F4F6;color:#6B7280}.badge.purple{background:#EDE9FE;color:#7C3AED}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:12px;color:#555;font-weight:600}
+.form-group input,.form-group select,.form-group textarea{padding:8px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#111;font-size:13px;font-family:inherit;outline:none}
+.form-group input:focus,.form-group select:focus{border-color:#1D4ED8}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;border:1px solid #e5e5e0;padding:22px;width:500px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.15)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;font-weight:700;font-size:16px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.avatar{width:40px;height:40px;border-radius:50%;background:#DBEAFE;color:#1D4ED8;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.progress{height:6px;background:#e5e5e0;border-radius:3px;overflow:hidden}
+.progress-bar{height:100%;border-radius:3px;background:#15803D}
+select.inline{font-size:12px;padding:3px 6px;border:1px solid #ddd;border-radius:6px;background:#fff}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-top">Karekat</div>
+    <div class="logo-name">Prints ERP</div>
+  </div>
+  <div class="nav-section">Main</div>
+  <div class="nav-item active" onclick="showPage('dashboard',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Dashboard
+  </div>
+  <div class="nav-item" onclick="showPage('orders',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/></svg>
+    Orders
+  </div>
+  <div class="nav-item" onclick="showPage('billing',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Billing
+  </div>
+  <div class="nav-item" onclick="showPage('inventory',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+    Inventory
+  </div>
+  <div class="nav-section">People</div>
+  <div class="nav-item" onclick="showPage('staff',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    Staff
+  </div>
+  <div class="nav-item" onclick="showPage('attendance',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M9 16l2 2 4-4"/></svg>
+    Attendance
+  </div>
+  <div class="nav-item" onclick="showPage('payroll',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+    Payroll
+  </div>
+  <div class="nav-section">Business</div>
+  <div class="nav-item" onclick="showPage('customers',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Customers
+  </div>
+  <div class="nav-item" onclick="showPage('finance',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    Finance
+  </div>
+</nav>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="page-header">
+    <div class="page-title">Dashboard</div>
+    <span style="font-size:12px;color:#888" id="dash-date"></span>
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="metric-label">Today's orders</div><div class="metric-val blue" id="m-orders">0</div></div>
+    <div class="metric"><div class="metric-label">Pending jobs</div><div class="metric-val amber" id="m-pending">0</div></div>
+    <div class="metric"><div class="metric-label">Revenue (month)</div><div class="metric-val green" id="m-revenue">₹0</div></div>
+    <div class="metric"><div class="metric-label">Low stock items</div><div class="metric-val red" id="m-lowstock">0</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-head">Recent orders</div>
+      <table><thead><tr><th>ID</th><th>Customer</th><th>Status</th></tr></thead><tbody id="dash-orders"></tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-head">Stock alerts</div>
+      <table><thead><tr><th>Material</th><th>Qty</th><th>Status</th></tr></thead><tbody id="dash-stock"></tbody></table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head">Staff today</div>
+    <table><thead><tr><th>Name</th><th>Role</th><th>Status</th><th>Active job</th></tr></thead><tbody id="dash-staff"></tbody></table>
+  </div>
+</div>
+
+<!-- ORDERS -->
+<div id="page-orders" class="page">
+  <div class="page-header">
+    <div class="page-title">Orders & jobs</div>
+    <button class="btn primary" onclick="openModal('order-modal')">+ New order</button>
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="metric-label">Received</div><div class="metric-val blue" id="o-received">0</div></div>
+    <div class="metric"><div class="metric-label">In design</div><div class="metric-val purple" id="o-design">0</div></div>
+    <div class="metric"><div class="metric-label">Printing</div><div class="metric-val amber" id="o-printing">0</div></div>
+    <div class="metric"><div class="metric-label">Ready</div><div class="metric-val green" id="o-ready">0</div></div>
+    <div class="metric"><div class="metric-label">Delivered</div><div class="metric-val gray" id="o-delivered">0</div></div>
+  </div>
+  <div class="card">
+    <div class="card-head">All orders <span id="order-count" style="font-weight:400;color:#888;font-size:12px"></span></div>
+    <table><thead><tr><th>ID</th><th>Customer</th><th>Job type</th><th>Assigned to</th><th>Deadline</th><th>Amount</th><th>Status</th></tr></thead><tbody id="orders-table"></tbody></table>
+  </div>
+</div>
+
+<!-- BILLING -->
+<div id="page-billing" class="page">
+  <div class="page-header">
+    <div class="page-title">Billing & invoices</div>
+    <button class="btn primary" onclick="openModal('invoice-modal')">+ New invoice</button>
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="metric-label">Total billed</div><div class="metric-val blue" id="b-total">₹0</div></div>
+    <div class="metric"><div class="metric-label">Paid</div><div class="metric-val green" id="b-paid">₹0</div></div>
+    <div class="metric"><div class="metric-label">Pending</div><div class="metric-val amber" id="b-pending">₹0</div></div>
+    <div class="metric"><div class="metric-label">GST collected</div><div class="metric-val gray" id="b-gst">₹0</div></div>
+  </div>
+  <div class="card">
+    <div class="card-head">Invoices (GST inclusive)</div>
+    <table><thead><tr><th>Invoice #</th><th>Customer</th><th>Job</th><th>Base amount</th><th>GST</th><th>Total</th><th>Status</th><th>Action</th></tr></thead><tbody id="invoices-table"></tbody></table>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div id="page-inventory" class="page">
+  <div class="page-header">
+    <div class="page-title">Inventory & stock</div>
+    <button class="btn primary" onclick="openModal('stock-modal')">+ Add material</button>
+  </div>
+  <div class="card">
+    <div class="card-head">Materials (edit qty inline)</div>
+    <table><thead><tr><th>Material</th><th>Unit</th><th>In stock</th><th>Reorder level</th><th>Status</th><th></th></tr></thead><tbody id="inventory-table"></tbody></table>
+  </div>
+</div>
+
+<!-- STAFF -->
+<div id="page-staff" class="page">
+  <div class="page-header">
+    <div class="page-title">Staff directory</div>
+    <button class="btn primary" onclick="openModal('staff-modal')">+ Add staff</button>
+  </div>
+  <div id="staff-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px"></div>
+</div>
+
+<!-- ATTENDANCE -->
+<div id="page-attendance" class="page">
+  <div class="page-header">
+    <div class="page-title">Attendance — <span id="att-month"></span></div>
+    <button class="btn" onclick="markToday()">✓ Mark all present today</button>
+  </div>
+  <div class="card">
+    <div class="card-head">Monthly summary (22 working days)</div>
+    <table><thead><tr><th>Staff</th><th>Role</th><th>Present</th><th>Absent</th><th>Leave</th><th>Attendance %</th></tr></thead><tbody id="att-table"></tbody></table>
+  </div>
+  <div class="card">
+    <div class="card-head">Leave requests</div>
+    <table><thead><tr><th>Staff</th><th>From</th><th>To</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead><tbody id="leave-table"></tbody></table>
+  </div>
+</div>
+
+<!-- PAYROLL -->
+<div id="page-payroll" class="page">
+  <div class="page-header">
+    <div class="page-title">Payroll — <span id="pay-month"></span></div>
+    <div style="font-size:14px;color:#555">Total payout: <strong id="pay-total" style="color:#1D4ED8">₹0</strong></div>
+  </div>
+  <div class="card">
+    <div class="card-head">Monthly payroll (auto-calculated from attendance)</div>
+    <table><thead><tr><th>Staff</th><th>Role</th><th>Base salary</th><th>Days present/22</th><th>Absent deduction</th><th>Advance</th><th>Net pay</th></tr></thead><tbody id="payroll-table"></tbody></table>
+  </div>
+</div>
+
+<!-- CUSTOMERS -->
+<div id="page-customers" class="page">
+  <div class="page-header">
+    <div class="page-title">Customers (CRM)</div>
+    <button class="btn primary" onclick="openModal('customer-modal')">+ Add customer</button>
+  </div>
+  <div class="card">
+    <div class="card-head">Customer list</div>
+    <table><thead><tr><th>Name</th><th>Business</th><th>Phone</th><th>Area</th><th>Orders</th><th>Total spent</th><th>Last order</th></tr></thead><tbody id="customers-table"></tbody></table>
+  </div>
+</div>
+
+<!-- FINANCE -->
+<div id="page-finance" class="page">
+  <div class="page-header">
+    <div class="page-title">Finance & accounts</div>
+    <button class="btn primary" onclick="openModal('expense-modal')">+ Add expense</button>
+  </div>
+  <div class="metrics">
+    <div class="metric"><div class="metric-label">Revenue (invoiced)</div><div class="metric-val green" id="f-revenue">₹0</div></div>
+    <div class="metric"><div class="metric-label">Total expenses</div><div class="metric-val red" id="f-expenses">₹0</div></div>
+    <div class="metric"><div class="metric-label">Payroll cost</div><div class="metric-val amber" id="f-payroll">₹0</div></div>
+    <div class="metric"><div class="metric-label">Net profit</div><div class="metric-val blue" id="f-profit">₹0</div></div>
+  </div>
+  <div class="card">
+    <div class="card-head">Expense ledger</div>
+    <table><thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th></tr></thead><tbody id="expenses-table"></tbody></table>
+  </div>
+</div>
+
+</div><!-- main -->
+
+<!-- MODALS -->
+<div class="overlay" id="order-modal">
+<div class="modal">
+  <div class="modal-head">New order <button class="btn sm" onclick="closeModal('order-modal')">✕</button></div>
+  <div class="form-grid">
+    <div class="form-group"><label>Customer name</label><input id="o-cust" placeholder="Customer name"></div>
+    <div class="form-group"><label>Phone</label><input id="o-phone" placeholder="Phone number"></div>
+    <div class="form-group"><label>Job type</label>
+      <select id="o-type"><option>Banner / Flex</option><option>Visiting cards</option><option>Brochure</option><option>Poster</option><option>Sticker</option><option>ID card</option><option>Invitation card</option><option>Logo design</option><option>Other</option></select>
+    </div>
+    <div class="form-group"><label>Size / specs</label><input id="o-size" placeholder="e.g. 4×2 ft, 500 pcs"></div>
+    <div class="form-group"><label>Assign to</label><select id="o-assign"></select></div>
+    <div class="form-group"><label>Deadline</label><input type="date" id="o-deadline"></div>
+    <div class="form-group"><label>Amount (₹)</label><input type="number" id="o-amount" placeholder="0"></div>
+    <div class="form-group"><label>Notes</label><input id="o-notes" placeholder="Special instructions"></div>
+  </div>
+  <button class="btn primary" style="margin-top:16px;width:100%" onclick="addOrder()">Create order</button>
+</div></div>
+
+<div class="overlay" id="invoice-modal">
+<div class="modal">
+  <div class="modal-head">New invoice <button class="btn sm" onclick="closeModal('invoice-modal')">✕</button></div>
+  <div class="form-grid">
+    <div class="form-group"><label>Customer name</label><input id="i-cust" placeholder="Customer name"></div>
+    <div class="form-group"><label>Job description</label><input id="i-desc" placeholder="Job / service description"></div>
+    <div class="form-group"><label>Amount before GST (₹)</label><input type="number" id="i-amount" placeholder="0"></div>
+    <div class="form-group"><label>GST rate</label>
+      <select id="i-gst"><option value="18">18% (CGST 9% + SGST 9%)</option><option value="12">12% (CGST 6% + SGST 6%)</option><option value="5">5%</option><option value="0">0% (exempt)</option></select>
+    </div>
+  </div>
+  <button class="btn primary" style="margin-top:16px;width:100%" onclick="addInvoice()">Create invoice</button>
+</div></div>
+
+<div class="overlay" id="staff-modal">
+<div class="modal">
+  <div class="modal-head">Add staff member <button class="btn sm" onclick="closeModal('staff-modal')">✕</button></div>
+  <div class="form-grid">
+    <div class="form-group"><label>Full name</label><input id="s-name" placeholder="Full name"></div>
+    <div class="form-group"><label>Role</label>
+      <select id="s-role"><option>Designer</option><option>Press Operator</option><option>Finishing</option><option>Counter / Reception</option><option>Delivery</option><option>Admin</option></select>
+    </div>
+    <div class="form-group"><label>Phone</label><input id="s-phone" placeholder="Phone number"></div>
+    <div class="form-group"><label>Monthly salary (₹)</label><input type="number" id="s-salary" placeholder="0"></div>
+    <div class="form-group"><label>Join date</label><input type="date" id="s-join"></div>
+    <div class="form-group"><label>Annual leave days</label><input type="number" id="s-leave" value="12"></div>
+  </div>
+  <button class="btn primary" style="margin-top:16px;width:100%" onclick="addStaff()">Add staff member</button>
+</div></div>
+
+<div class="overlay" id="stock-modal">
+<div class="modal">
+  <div class="modal-head">Add material <button class="btn sm" onclick="closeModal('stock-modal')">✕</button></div>
+  <div class="form-grid">
+    <div class="form-group"><label>Material name</label><input id="st-name" placeholder="e.g. Flex material"></div>
+    <div class="form-group"><label>Unit</label>
+      <select id="st-unit"><option>sq ft</option><option>rolls</option><option>reams</option><option>sheets</option><option>pcs</option><option>kg</option><option>litre</option></select>
+    </div>
+    <div class="form-group"><label>Current stock</label><input type="number" id="st-qty" placeholder="0"></div>
+    <div class="form-group"><label>Reorder level</label><input type="number" id="st-reorder" placeholder="0"></div>
+  </div>
+  <button class="btn primary" style="margin-top:16px;width:100%" onclick="addStock()">Add material</button>
+</div></div>
+
+<div class="overlay" id="customer-modal">
+<div class="modal">
+  <div class="modal-head">Add customer <button class="btn sm" onclick="closeModal('customer-modal')">✕</button></div>
+  <div class="form-grid">
+    <div class="form-group"><label>Customer name</label><input id="c-name" placeholder="Full name"></div>
+    <div class="form-group"><label>Phone</label><input id="c-phone" placeholder="Phone number"></div>
+    <div class="form-group"><label>Business name</label><input id="c-biz" placeholder="Business (optional)"></div>
+    <div class="form-group"><label>Area / location</label><input id="c-area" placeholder="Manjeri, Perinthalmanna..."></div>
+  </div>
+  <button class="btn primary" style="margin-top:16px;width:100%" onclick="addCustomer()">Add customer</button>
+</div></div>
+
+<div class="overlay" id="expense-modal">
+<div class="modal">
+  <div class="modal-head">Add expense <button class="btn sm" onclick="closeModal('expense-modal')">✕</button></div>
+  <div class="form-grid">
+    <div class="form-group"><label>Date</label><input type="date" id="e-date"></div>
+    <div class="form-group"><label>Category</label>
+      <select id="e-cat"><option>Materials</option><option>Electricity</option><option>Rent</option><option>Equipment</option><option>Transport</option><option>Maintenance</option><option>Other</option></select>
+    </div>
+    <div class="form-group" style="grid-column:1/-1"><label>Description</label><input id="e-desc" placeholder="Describe the expense"></div>
+    <div class="form-group"><label>Amount (₹)</label><input type="number" id="e-amount" placeholder="0"></div>
+  </div>
+  <button class="btn primary" style="margin-top:16px;width:100%" onclick="addExpense()">Add expense</button>
+</div></div>
+
+<script>
+const today=new Date();
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const weekdays=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+document.getElementById('dash-date').textContent=weekdays[today.getDay()]+', '+today.getDate()+' '+months[today.getMonth()]+' '+today.getFullYear();
+document.getElementById('att-month').textContent=months[today.getMonth()]+' '+today.getFullYear();
+document.getElementById('pay-month').textContent=months[today.getMonth()]+' '+today.getFullYear();
+
+let orders=[
+  {id:'ORD-001',customer:'Rahul Store',phone:'9876543210',type:'Banner / Flex',size:'6×3 ft',assign:'Arun',deadline:'2026-05-12',amount:1200,status:'Printing',notes:''},
+  {id:'ORD-002',customer:'City Clinic',phone:'9876543211',type:'Visiting cards',size:'500 pcs',assign:'Fathima',deadline:'2026-05-13',amount:450,status:'In design',notes:'Double sided'},
+  {id:'ORD-003',customer:'New Bakery',phone:'9876543212',type:'Poster',size:'A3 × 50',assign:'Arun',deadline:'2026-05-11',amount:800,status:'Ready',notes:''},
+  {id:'ORD-004',customer:'Rahman Textiles',phone:'9876543213',type:'Brochure',size:'Tri-fold 200 pcs',assign:'Fathima',deadline:'2026-05-15',amount:2400,status:'Received',notes:'Urgent'},
+  {id:'ORD-005',customer:'Sahara Travels',phone:'9876543214',type:'Sticker',size:'A4 × 100',assign:'Arun',deadline:'2026-05-14',amount:600,status:'Delivered',notes:''},
+];
+
+let invoices=[
+  {id:'INV-001',customer:'Rahul Store',desc:'Banner printing 6×3 ft',amount:1200,gst:18,status:'Paid'},
+  {id:'INV-002',customer:'City Clinic',desc:'Visiting cards 500 pcs',amount:450,gst:18,status:'Pending'},
+  {id:'INV-003',customer:'New Bakery',desc:'A3 posters × 50',amount:800,gst:18,status:'Paid'},
+  {id:'INV-004',customer:'Sahara Travels',desc:'A4 stickers × 100',amount:600,gst:12,status:'Paid'},
+];
+
+let staff=[
+  {id:1,name:'Arun Kumar',role:'Designer',phone:'9000000001',salary:18000,join:'2024-01-10',leave:10,present:18,absent:2,leaveUsed:0,advance:0,status:'Present'},
+  {id:2,name:'Fathima Noor',role:'Designer',phone:'9000000002',salary:17000,join:'2024-03-01',leave:12,present:19,absent:1,leaveUsed:0,advance:0,status:'Present'},
+  {id:3,name:'Suresh Menon',role:'Press Operator',phone:'9000000003',salary:16000,join:'2023-11-15',leave:8,present:17,absent:2,leaveUsed:1,advance:500,status:'Present'},
+  {id:4,name:'Riya Pradeep',role:'Counter / Reception',phone:'9000000004',salary:14000,join:'2025-02-01',leave:12,present:20,absent:0,leaveUsed:0,advance:0,status:'Present'},
+  {id:5,name:'Babu Thomas',role:'Finishing',phone:'9000000005',salary:15000,join:'2024-06-01',leave:6,present:16,absent:3,leaveUsed:1,advance:1000,status:'Leave'},
+  {id:6,name:'Jasim KP',role:'Delivery',phone:'9000000006',salary:13000,join:'2025-05-01',leave:12,present:20,absent:0,leaveUsed:0,advance:0,status:'Present'},
+];
+
+let inventory=[
+  {name:'Flex material',unit:'sq ft',qty:800,reorder:200},
+  {name:'Vinyl (gloss)',unit:'sq ft',qty:150,reorder:200},
+  {name:'A4 paper (80gsm)',unit:'reams',qty:25,reorder:10},
+  {name:'Inkjet ink (CMYK set)',unit:'litre',qty:3,reorder:5},
+  {name:'Lamination roll',unit:'rolls',qty:12,reorder:5},
+  {name:'Banner eyelets',unit:'pcs',qty:500,reorder:100},
+  {name:'Foam board',unit:'sheets',qty:40,reorder:20},
+];
+
+let customers=[
+  {name:'Rahul Sajan',phone:'9876543210',biz:'Rahul General Store',area:'Manjeri',orders:3,spent:3600,last:'2026-05-10'},
+  {name:'Dr. Anoop',phone:'9876543211',biz:'City Multi Speciality Clinic',area:'Perinthalmanna',orders:2,spent:900,last:'2026-05-08'},
+  {name:'Siraj',phone:'9876543212',biz:'New Bakery & Cafe',area:'Manjeri',orders:5,spent:4200,last:'2026-05-11'},
+  {name:'Rahman',phone:'9876543213',biz:'Rahman Textiles',area:'Tirur',orders:1,spent:2400,last:'2026-05-09'},
+];
+
+let leaveRequests=[
+  {staff:'Babu Thomas',from:'2026-05-11',to:'2026-05-12',reason:'Family function',status:'Approved'},
+  {staff:'Suresh Menon',from:'2026-05-20',to:'2026-05-20',reason:'Medical appointment',status:'Pending'},
+];
+
+let expenses=[
+  {date:'2026-05-01',cat:'Electricity',desc:'Monthly EB bill',amount:4200},
+  {date:'2026-05-03',cat:'Materials',desc:'Flex roll purchase — 2 rolls',amount:8500},
+  {date:'2026-05-07',cat:'Transport',desc:'Delivery van fuel',amount:1200},
+  {date:'2026-05-09',cat:'Maintenance',desc:'Printer head cleaning',amount:800},
+];
+
+let orderCounter=6,invoiceCounter=5;
+
+function showPage(p,el){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  if(el)el.classList.add('active');
+  render(p);
+}
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open')}));
+
+const fmt=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const badge=(s)=>{
+  const m={Received:'blue','In design':'purple',Printing:'amber',Ready:'green',Delivered:'gray',Paid:'green',Pending:'amber',Approved:'green',Rejected:'red',Present:'green',Leave:'amber',Absent:'red'};
+  return `<span class="badge ${m[s]||'gray'}">${s}</span>`;
+};
+const initials=n=>n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+const v=id=>{const el=document.getElementById(id);return el?el.value:''};
+
+function render(page){
+  if(page==='dashboard'){
+    document.getElementById('m-orders').textContent=orders.length;
+    document.getElementById('m-pending').textContent=orders.filter(o=>o.status!=='Delivered'&&o.status!=='Ready').length;
+    const rev=invoices.filter(i=>i.status==='Paid').reduce((s,i)=>s+i.amount*(1+i.gst/100),0);
+    document.getElementById('m-revenue').textContent=fmt(rev);
+    document.getElementById('m-lowstock').textContent=inventory.filter(i=>i.qty<=i.reorder).length;
+    document.getElementById('dash-orders').innerHTML=orders.slice(-5).reverse().map(o=>`<tr><td style="font-weight:600">${o.id}</td><td>${o.customer}</td><td>${badge(o.status)}</td></tr>`).join('');
+    document.getElementById('dash-stock').innerHTML=inventory.map(i=>`<tr><td>${i.name}</td><td>${i.qty} ${i.unit}</td><td>${i.qty<=i.reorder?'<span class="badge red">Low</span>':'<span class="badge green">OK</span>'}</td></tr>`).join('');
+    const jobMap={};
+    orders.filter(o=>o.status!=='Delivered').forEach(o=>{if(!jobMap[o.assign])jobMap[o.assign]=[];jobMap[o.assign].push(o.type)});
+    document.getElementById('dash-staff').innerHTML=staff.map(s=>`<tr><td style="font-weight:600">${s.name}</td><td style="color:#888">${s.role}</td><td>${badge(s.status)}</td><td style="color:#888;font-size:12px">${(jobMap[s.name.split(' ')[0]]||[]).slice(0,2).join(', ')||'—'}</td></tr>`).join('');
+  }
+  if(page==='orders'){
+    const sel=document.getElementById('o-assign');
+    sel.innerHTML=staff.map(s=>`<option>${s.name.split(' ')[0]}</option>`).join('');
+    const statuses=['Received','In design','Printing','Ready','Delivered'];
+    document.getElementById('o-received').textContent=orders.filter(o=>o.status==='Received').length;
+    document.getElementById('o-design').textContent=orders.filter(o=>o.status==='In design').length;
+    document.getElementById('o-printing').textContent=orders.filter(o=>o.status==='Printing').length;
+    document.getElementById('o-ready').textContent=orders.filter(o=>o.status==='Ready').length;
+    document.getElementById('o-delivered').textContent=orders.filter(o=>o.status==='Delivered').length;
+    document.getElementById('order-count').textContent=orders.length+' total';
+    document.getElementById('orders-table').innerHTML=orders.map((o,i)=>`
+      <tr><td style="font-weight:600">${o.id}</td>
+      <td>${o.customer}<br><span style="font-size:11px;color:#888">${o.phone}</span></td>
+      <td>${o.type}<br><span style="font-size:11px;color:#888">${o.size}</span></td>
+      <td>${o.assign}</td>
+      <td style="${new Date(o.deadline)<today&&o.status!=='Delivered'?'color:#B91C1C;font-weight:600':''}">${o.deadline}</td>
+      <td style="font-weight:600">${fmt(o.amount)}</td>
+      <td><select class="inline" onchange="orders[${i}].status=this.value;render('orders')">${statuses.map(s=>`<option${s===o.status?' selected':''}>${s}</option>`).join('')}</select></td></tr>`).join('');
+  }
+  if(page==='billing'){
+    const tot=invoices.reduce((s,i)=>s+i.amount,0);
+    const paid=invoices.filter(i=>i.status==='Paid').reduce((s,i)=>s+i.amount,0);
+    const pend=invoices.filter(i=>i.status==='Pending').reduce((s,i)=>s+i.amount,0);
+    const gst=invoices.reduce((s,i)=>s+i.amount*(i.gst/100),0);
+    document.getElementById('b-total').textContent=fmt(tot+gst);
+    document.getElementById('b-paid').textContent=fmt(paid);
+    document.getElementById('b-pending').textContent=fmt(pend);
+    document.getElementById('b-gst').textContent=fmt(gst);
+    document.getElementById('invoices-table').innerHTML=invoices.map((inv,i)=>{
+      const g=Math.round(inv.amount*(inv.gst/100));
+      return `<tr><td style="font-weight:600">${inv.id}</td><td>${inv.customer}</td><td style="color:#888;font-size:12px">${inv.desc}</td>
+      <td>₹${inv.amount.toLocaleString('en-IN')}</td>
+      <td style="color:#888">₹${g.toLocaleString('en-IN')}<br><span style="font-size:10px">${inv.gst}%</span></td>
+      <td style="font-weight:700">₹${(inv.amount+g).toLocaleString('en-IN')}</td>
+      <td>${badge(inv.status)}</td>
+      <td><button class="btn sm" onclick="invoices[${i}].status=invoices[${i}].status==='Paid'?'Pending':'Paid';render('billing')">${inv.status==='Paid'?'Mark pending':'Mark paid'}</button></td></tr>`;
+    }).join('');
+  }
+  if(page==='inventory'){
+    document.getElementById('inventory-table').innerHTML=inventory.map((it,i)=>`
+      <tr><td style="font-weight:600">${it.name}</td><td style="color:#888">${it.unit}</td>
+      <td><input type="number" value="${it.qty}" style="width:90px;padding:4px 8px;border:1px solid #ddd;border-radius:6px;font-size:13px" onchange="inventory[${i}].qty=+this.value;render('inventory')"></td>
+      <td style="color:#888">${it.reorder} ${it.unit}</td>
+      <td>${it.qty<=it.reorder?'<span class="badge red">Low stock</span>':'<span class="badge green">OK</span>'}</td>
+      <td><button class="btn sm danger" onclick="inventory.splice(${i},1);render('inventory')">✕</button></td></tr>`).join('');
+  }
+  if(page==='staff'){
+    document.getElementById('staff-cards').innerHTML=staff.map(s=>`
+      <div class="card" style="padding:16px">
+        <div class="avatar" style="margin-bottom:10px">${initials(s.name)}</div>
+        <div style="font-weight:700;font-size:14px">${s.name}</div>
+        <div style="font-size:12px;color:#888;margin-bottom:10px">${s.role}</div>
+        <div style="font-size:12px;color:#555;margin-bottom:4px">📞 ${s.phone}</div>
+        <div style="font-size:12px;color:#555;margin-bottom:10px">💰 ${fmt(s.salary)}/mo</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="badge blue">${s.leave} leave</span>
+          ${badge(s.status)}
+        </div>
+      </div>`).join('');
+  }
+  if(page==='attendance'){
+    const wdays=22;
+    document.getElementById('att-table').innerHTML=staff.map(s=>{
+      const pct=Math.round((s.present/wdays)*100);
+      const color=pct>=90?'#15803D':pct>=75?'#B45309':'#B91C1C';
+      return `<tr><td style="font-weight:600">${s.name}</td><td style="color:#888">${s.role}</td>
+        <td><span class="badge green">${s.present}</span></td>
+        <td><span class="badge red">${s.absent}</span></td>
+        <td><span class="badge amber">${s.leaveUsed}</span></td>
+        <td><div style="display:flex;align-items:center;gap:8px">
+          <div class="progress" style="flex:1"><div class="progress-bar" style="width:${pct}%;background:${color}"></div></div>
+          <span style="font-size:12px;font-weight:600;color:${color}">${pct}%</span>
+        </div></td></tr>`;
+    }).join('');
+    document.getElementById('leave-table').innerHTML=leaveRequests.map((l,i)=>`
+      <tr><td style="font-weight:600">${l.staff}</td><td>${l.from}</td><td>${l.to}</td><td>${l.reason}</td><td>${badge(l.status)}</td>
+      <td>${l.status==='Pending'?`<button class="btn sm" style="margin-right:4px" onclick="approveLeave(${i},true)">Approve</button><button class="btn sm danger" onclick="approveLeave(${i},false)">Reject</button>`:'—'}</td></tr>`).join('');
+  }
+  if(page==='payroll'){
+    const wdays=22;let total=0;
+    document.getElementById('payroll-table').innerHTML=staff.map(s=>{
+      const pd=s.salary/wdays;
+      const ded=Math.round(s.absent*pd);
+      const net=s.salary-ded-s.advance;
+      total+=net;
+      return `<tr><td style="font-weight:600">${s.name}</td><td style="color:#888">${s.role}</td>
+        <td>${fmt(s.salary)}</td><td>${s.present} / ${wdays}</td>
+        <td style="color:#B91C1C">− ${fmt(ded)}</td>
+        <td style="color:#B45309">− ${fmt(s.advance)}</td>
+        <td style="font-weight:700;color:#1D4ED8">${fmt(net)}</td></tr>`;
+    }).join('');
+    document.getElementById('pay-total').textContent=fmt(total);
+  }
+  if(page==='customers'){
+    document.getElementById('customers-table').innerHTML=customers.map(c=>`
+      <tr><td style="font-weight:600">${c.name}</td><td style="color:#888;font-size:12px">${c.biz}</td>
+      <td>${c.phone}</td><td style="color:#888">${c.area}</td>
+      <td style="font-weight:600">${c.orders}</td><td style="font-weight:700;color:#15803D">${fmt(c.spent)}</td>
+      <td style="color:#888">${c.last}</td></tr>`).join('');
+  }
+  if(page==='finance'){
+    const wdays=22;
+    const rev=invoices.filter(i=>i.status==='Paid').reduce((s,i)=>s+i.amount*(1+i.gst/100),0);
+    const exp=expenses.reduce((s,e)=>s+e.amount,0);
+    const payroll=staff.reduce((s,st)=>{const pd=st.salary/wdays;return s+(st.salary-Math.round(st.absent*pd)-st.advance)},0);
+    document.getElementById('f-revenue').textContent=fmt(rev);
+    document.getElementById('f-expenses').textContent=fmt(exp);
+    document.getElementById('f-payroll').textContent=fmt(payroll);
+    document.getElementById('f-profit').textContent=fmt(rev-exp-payroll);
+    document.getElementById('expenses-table').innerHTML=expenses.map(e=>`
+      <tr><td>${e.date}</td><td><span class="badge gray">${e.cat}</span></td><td>${e.desc}</td>
+      <td style="font-weight:600">${fmt(e.amount)}</td></tr>`).join('');
+  }
+}
+
+function addOrder(){
+  orders.push({id:'ORD-00'+orderCounter++,customer:v('o-cust'),phone:v('o-phone'),type:v('o-type'),size:v('o-size'),assign:v('o-assign'),deadline:v('o-deadline'),amount:+v('o-amount')||0,status:'Received',notes:v('o-notes')});
+  const c=customers.find(x=>x.name.toLowerCase()===v('o-cust').toLowerCase());
+  if(c){c.orders++;c.last=today.toISOString().slice(0,10);}
+  else if(v('o-cust'))customers.push({name:v('o-cust'),phone:v('o-phone'),biz:'',area:'',orders:1,spent:0,last:today.toISOString().slice(0,10)});
+  closeModal('order-modal');render('orders');
+}
+function addInvoice(){
+  invoices.push({id:'INV-00'+invoiceCounter++,customer:v('i-cust'),desc:v('i-desc'),amount:+v('i-amount')||0,gst:+v('i-gst'),status:'Pending'});
+  closeModal('invoice-modal');render('billing');
+}
+function addStaff(){
+  staff.push({id:staff.length+1,name:v('s-name'),role:v('s-role'),phone:v('s-phone'),salary:+v('s-salary')||0,join:v('s-join'),leave:+v('s-leave')||12,present:0,absent:0,leaveUsed:0,advance:0,status:'Present'});
+  closeModal('staff-modal');render('staff');
+}
+function addStock(){
+  inventory.push({name:v('st-name'),unit:v('st-unit'),qty:+v('st-qty')||0,reorder:+v('st-reorder')||0});
+  closeModal('stock-modal');render('inventory');
+}
+function addCustomer(){
+  customers.push({name:v('c-name'),phone:v('c-phone'),biz:v('c-biz'),area:v('c-area'),orders:0,spent:0,last:'—'});
+  closeModal('customer-modal');render('customers');
+}
+function addExpense(){
+  expenses.push({date:v('e-date')||today.toISOString().slice(0,10),cat:v('e-cat'),desc:v('e-desc'),amount:+v('e-amount')||0});
+  closeModal('expense-modal');render('finance');
+}
+function approveLeave(i,approve){
+  leaveRequests[i].status=approve?'Approved':'Rejected';
+  if(approve){const s=staff.find(st=>st.name.startsWith(leaveRequests[i].staff.split(' ')[0]));if(s){s.leaveUsed++;s.status='Leave';}}
+  render('attendance');
+}
+function markToday(){staff.forEach(s=>{if(s.status==='Present')s.present=Math.min(s.present+1,22)});render('attendance');}
+
+render('dashboard');
+</script>
+</body>
+</html>

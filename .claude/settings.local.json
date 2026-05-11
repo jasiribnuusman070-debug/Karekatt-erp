@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Program Files\\\\nodejs\" -ErrorAction SilentlyContinue; Get-ChildItem \"C:\\\\Program Files \\(x86\\)\\\\nodejs\" -ErrorAction SilentlyContinue; Test-Path \"$env:APPDATA\\\\npm\\\\npm.cmd\")",
+      "PowerShell(Rename-Item \"C:\\\\Users\\\\Jashir Usman\\\\Desktop\\\\Karekatt Erp\\\\frontend\\\\src\\\\utils.js\" \"utils.jsx\")",
+      "PowerShell($env:PATH = \"C:\\\\Program Files\\\\nodejs;\" + $env:PATH; cd \"C:\\\\Users\\\\Jashir Usman\\\\Desktop\\\\Karekatt Erp\\\\backend\"; npm install 2>&1)",
+      "PowerShell(cd \"C:\\\\Users\\\\Jashir Usman\\\\Desktop\\\\Karekatt Erp\\\\backend\"; Start-Process -FilePath \"C:\\\\Program Files\\\\nodejs\\\\node.exe\" -ArgumentList \"server.js\" -WorkingDirectory \\(Get-Location\\) -PassThru | Select-Object Id; Start-Sleep -Seconds 3; Invoke-RestMethod -Uri \"http://localhost:3001/api/health\" -Method Get 2>&1)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\Jashir Usman\\\\Downloads\\\\stitch_karekat_prints_erp_dashboard\" -Recurse | Where-Object { !$_.PSIsContainer } | Select-Object FullName, Extension, Length)",
+      "PowerShell($body = [System.Text.Encoding]::UTF8.GetBytes\\('{\"username\":\"riya\",\"password\":\"karekat2024\"}'\\); $req = [System.Net.WebRequest]::Create\\(\"http://localhost:3001/api/auth/login\"\\); $req.Method = \"POST\"; $req.ContentType = \"application/json\"; $req.ContentLength = $body.Length; $stream = $req.GetRequestStream\\(\\); $stream.Write\\($body, 0, $body.Length\\); $stream.Close\\(\\); $resp = $req.GetResponse\\(\\); $reader = New-Object System.IO.StreamReader\\($resp.GetResponseStream\\(\\)\\); $reader.ReadToEnd\\(\\))",
+      "Bash(curl -s http://localhost:3001/api/health)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm run *)",
+      "Bash(where vercel *)",
+      "Bash(where railway *)",
+      "Bash(where gh *)"
+    ]
+  }
+}
