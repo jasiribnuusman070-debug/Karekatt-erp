@@ -104,7 +104,7 @@ export default function Settings() {
           </div>
           <div className="p-md flex flex-col gap-md">
             {[
-              { key: 'business_name', label: 'Business Name', placeholder: 'Karekat Prints' },
+              { key: 'business_name', label: 'Business Name', placeholder: 'KarekatOS' },
               { key: 'business_phone', label: 'Phone', placeholder: '+91 XXXXXXXXXX' },
               { key: 'business_address', label: 'Address', placeholder: 'Full address' },
               { key: 'gstin', label: 'GSTIN', placeholder: 'GST number' },

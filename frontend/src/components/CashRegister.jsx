@@ -59,7 +59,7 @@ export default function CashRegister() {
       .bold { font-weight: bold; }
       .total { border-top: 2px solid #000; font-weight: bold; font-size: 1.1em; }
     </style></head><body>
-    <h2>Karekat Prints — Daily Closing Report</h2>
+    <h2>KarekatOS — Daily Closing Report</h2>
     <p>Date: ${today.today || ''} | Prepared by: ${e.created_by || ''}</p>
     <div class="row"><span>Opening Balance</span><span>₹${(e.opening_balance || 0).toLocaleString('en-IN')}</span></div>
     <div class="row"><span>Cash In</span><span>₹${(e.cash_in || 0).toLocaleString('en-IN')}</span></div>

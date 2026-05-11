@@ -25,7 +25,7 @@ function printCredentialSlip(staff, username, password) {
     @media print { body { padding: 0; } }
   </style></head><body>
   <div class="box">
-    <h2>KAREKAT PRINTS ERP</h2>
+    <h2>KarekatOS</h2>
     <div class="sub">Staff Login Details</div>
     <div class="row"><span class="label">Name:</span><span class="val">${staff.name}</span></div>
     <div class="row"><span class="label">Role:</span><span class="val">${staff.role}</span></div>
@@ -102,7 +102,7 @@ export default function Staff() {
 
   const waCredSlip = (cred) => {
     const url = window.location.origin;
-    const msg = `Karekat ERP Login:\nUsername: ${cred.username}\nPassword: ${cred.password}\nURL: ${url}\n\nPlease change your password after first login.`;
+    const msg = `KarekatOS Login:\nUsername: ${cred.username}\nPassword: ${cred.password}\nURL: ${url}\n\nPlease change your password after first login.`;
     const phone = cred.staff.phone?.replace(/\D/g, '');
     if (phone) window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
     else alert('No phone number on file');

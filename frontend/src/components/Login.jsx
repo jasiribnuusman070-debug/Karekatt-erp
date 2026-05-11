@@ -38,8 +38,8 @@ export default function Login() {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-inverse-surface mb-md shadow-modal">
             <span className="material-symbols-outlined text-white text-3xl">local_printshop</span>
           </div>
-          <h1 className="text-headline-md text-on-background font-bold">Karekat Prints</h1>
-          <p className="text-body-sm text-on-surface-variant mt-xs">Sign in to your ERP dashboard</p>
+          <h1 className="text-headline-md text-on-background font-bold">KarekatOS</h1>
+          <p className="text-body-sm text-on-surface-variant mt-xs">Sign in to your dashboard</p>
         </div>
 
         {/* Card */}

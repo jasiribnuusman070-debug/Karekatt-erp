@@ -199,8 +199,8 @@ export default function Layout() {
           <div className="flex items-center gap-sm">
             <span className="material-symbols-outlined text-primary-fixed-dim text-2xl">local_printshop</span>
             <div>
-              <p className="text-white font-bold text-headline-sm leading-tight">Karekat</p>
-              <p className="text-primary-fixed-dim text-label-sm tracking-widest uppercase">Prints ERP</p>
+              <p className="text-white font-bold text-headline-sm leading-tight">KarekatOS</p>
+              <p className="text-primary-fixed-dim text-label-sm tracking-widest uppercase">Operations</p>
             </div>
           </div>
           <div className="mt-sm">

@@ -142,7 +142,7 @@ export function printQuotation(order, pricing) {
     @media print{body{padding:20px}}
   </style></head><body>
   <div class="header">
-    <div><div class="logo">Karekat Prints<span>PRINT SHOP ERP</span></div>
+    <div><div class="logo">KarekatOS<span>PRINT SHOP ERP</span></div>
     <div style="font-size:12px;color:#666;margin-top:8px">Manjeri, Malappuram | Ph: 9000000000</div></div>
     <div style="text-align:right"><div class="badge">QUOTATION</div>
     <div style="font-size:12px;color:#666;margin-top:8px">${order.order_id || 'DRAFT'}<br/>${today}</div></div>
@@ -167,7 +167,7 @@ export function printQuotation(order, pricing) {
   </div>
   <div class="sig">
     <div class="sig-box">Customer Signature<br/><br/>Date: ___________</div>
-    <div class="sig-box">For Karekat Prints<br/><br/>Authorised Signatory</div>
+    <div class="sig-box">For KarekatOS<br/><br/>Authorised Signatory</div>
   </div>
   <div class="note">This quotation is valid for 3 days from the date of issue. Subject to material availability.</div>
   </body></html>`);
@@ -197,7 +197,7 @@ export function printInvoice(order, invoiceId) {
     @media print{body{padding:20px}}
   </style></head><body>
   <div class="header">
-    <div><div class="logo">Karekat Prints<span>TAX INVOICE</span></div>
+    <div><div class="logo">KarekatOS<span>TAX INVOICE</span></div>
     <div style="font-size:12px;color:#666;margin-top:8px">Manjeri, Malappuram | GSTIN: 32XXXXX</div></div>
     <div style="text-align:right"><div class="badge">PAID</div>
     <div style="font-size:12px;color:#666;margin-top:8px">${invoiceId}<br/>${today}</div></div>
